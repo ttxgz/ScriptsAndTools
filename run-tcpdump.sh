@@ -1,5 +1,7 @@
 #!/bin/bash
 
+# usage: ./run-tcpdump.sh hizhan@165.232.180.183
+
 bar_size=40
 bar_char_done="#"
 bar_char_todo="-"
