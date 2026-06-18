@@ -24,7 +24,7 @@ MEDIA_PATH="/home/ubuntu/test_media"
 #RTMP_PUBLISH_PATH="rtmp://rtmp-sgp-1-dev.millicast.com:1935/v2/pub"
 #RTMP_STREAM="test_zita?token=aadd20a9acc8e8df510c842bbca67b59141b441425acdb55ce32e507ed11a389"
 # phx
-RTMP_PUBLISH_PATH="rtmp://rtmp-sgp-1-phx.millicast.com:1935/v2/pub"
+RTMP_PUBLISH_PATH="rtmp://rtmp-phx-1-dev.millicast.com:1935/v2/pub"
 RTMP_STREAM="test_zita?token=bc243806e98fc958ab153a80f3322acbbc5636cbb2d3ee26b602ee8115ead03f"
 
 
