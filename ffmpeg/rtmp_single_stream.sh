@@ -24,18 +24,20 @@ MEDIA_PATH="/home/ubuntu/test_media"
 #RTMP_PUBLISH_PATH="rtmp://rtmp-sgp-1-dev.millicast.com:1935/v2/pub"
 #RTMP_STREAM="test_zita?token=aadd20a9acc8e8df510c842bbca67b59141b441425acdb55ce32e507ed11a389"
 # phx
-RTMP_PUBLISH_PATH="rtmp://rtmp-phx-1-dev.millicast.com:1935/v2/pub"
-RTMP_STREAM="test_zita?token=bc243806e98fc958ab153a80f3322acbbc5636cbb2d3ee26b602ee8115ead03f"
+#RTMP_PUBLISH_PATH="rtmp://rtmp-phx-1-dev.millicast.com:1935/v2/pub"
+#RTMP_STREAM="test_zita?token=bc243806e98fc958ab153a80f3322acbbc5636cbb2d3ee26b602ee8115ead03f"
 
 
 ############### staging
 # syd-1
 #RTMP_PUBLISH_PATH="rtmp://rtmp-syd-1-staging.millicast.com:1935/v2/pub"
-#RTMP_STREAM="test_zita.a?token=8ce4c5d1138cf368a6065f952ecfc06ac705c25a7c4d00ce974f3485b13ba273"
+#RTMP_STREAM="test_zita?token=8ce4c5d1138cf368a6065f952ecfc06ac705c25a7c4d00ce974f3485b13ba273"
 # sgp-1
 #RTMP_PUBLISH_PATH="rtmp://rtmp-sgp-1-staging.millicast.com:1935/v2/pub"
-#RTMP_STREAM="test_zita.a?token=ec5f13528328ce735e1589a8f2fa31d5ea3d8304b5d2c81ef2fc4903e25330cc"
-
+#RTMP_STREAM="test_zita?token=ec5f13528328ce735e1589a8f2fa31d5ea3d8304b5d2c81ef2fc4903e25330cc"
+# lon-1
+RTMP_PUBLISH_PATH="rtmp://rtmp-lon-1-staging.millicast.com:1935/v2/pub"
+RTMP_STREAM="test_zita_restream?token=4474f89aeee53cdc5134f217e64907b523003c1c9c378032a43e502b1e2d2e1e"
 
 ############### local test
 #RTMP_PUBLISH_PATH="rtmp://192.9.189.148/v2/pub"
@@ -73,35 +75,27 @@ echo ${RTMP_URL}
 
 
 ##################### multi video track ##############################################################
-# rtmp multi
-#ffmpeg -nostdin -fflags +genpts -re  \
-#        -stream_loop -1 -i $MEDIA_FILE1 \
-#        -stream_loop -1 -i $MEDIA_FILE2 \
-#        -stream_loop -1 -i $MEDIA_FILE4 \
-#        -stream_loop -1 -i $MEDIA_FILE3 \
-#    -map 0:v -map 0:a -c:v $V_CODEC -c:a $A_CODEC -f flv  "${RTMP_URL}&simulcastId&sourceId=0" \
-#    -map 1:v -map 1:a -c:v $V_CODEC -an -f flv  "${RTMP_URL}&sourceId=3&simulcastId&videoOnly" \
-#    -map 2:v -map 2:a -c:v $V_CODEC -c:a $A_CODEC -f flv  "${RTMP_URL}&sourceId=2&simulcastId=zita_release_test_publish_source_2" \
-#    -map 3:v -map 3:a -c:v $V_CODEC -an -f flv  "${RTMP_URL}&sourceId=1&simulcastId=zita_release_test_publish_source_2&videoOnly"
+
+## NOTICE: norestream has to be set so millicast restream would only restream correct source
 
 echo "
 ffmpeg \
 -nostdin -fflags +genpts -re -stream_loop -1 -i $MEDIA_FILE \
 -map 0:v:0 -map 0:a:0 -c:a copy -c:v copy -f flv "${RTMP_URL}&sourceId=1&simulcastId&videoTargetBitrate=4000" \
--map 0:v:1 -c:v copy -f flv "${RTMP_URL}&sourceId=2&simulcastId&videoOnly&videoTargetBitrate=1536" \
--map 0:v:2 -c:v copy -f flv "${RTMP_URL}&sourceId=3&simulcastId&videoOnly&videoTargetBitrate=540" \
--map 0:v:3 -c:v copy -f flv "${RTMP_URL}&sourceId=4&simulcastId&videoOnly&videoTargetBitrate=250" \
--map 0:v:4 -c:v copy -f flv "${RTMP_URL}&sourceId=5&simulcastId&videoOnly&videoTargetBitrate=200"
+-map 0:v:1 -c:v copy -f flv "${RTMP_URL}&norestream&sourceId=2&simulcastId&videoOnly&videoTargetBitrate=1536" \
+-map 0:v:2 -c:v copy -f flv "${RTMP_URL}&norestream&sourceId=3&simulcastId&videoOnly&videoTargetBitrate=540" \
+-map 0:v:3 -c:v copy -f flv "${RTMP_URL}&norestream&sourceId=4&simulcastId&videoOnly&videoTargetBitrate=250" \
+-map 0:v:4 -c:v copy -f flv "${RTMP_URL}&norestream&sourceId=5&simulcastId&videoOnly&videoTargetBitrate=200"
 "
 
 
 ffmpeg \
 -nostdin -fflags +genpts -re -stream_loop -1 -i $MEDIA_FILE \
 -map 0:v:0 -map 0:a:0 -c:a copy -c:v copy -f flv "${RTMP_URL}&sourceId=1&simulcastId&videoTargetBitrate=4000" \
--map 0:v:1 -c:v copy -f flv "${RTMP_URL}&sourceId=2&simulcastId&videoOnly&videoTargetBitrate=1536" \
--map 0:v:2 -c:v copy -f flv "${RTMP_URL}&sourceId=3&simulcastId&videoOnly&videoTargetBitrate=540" \
--map 0:v:3 -c:v copy -f flv "${RTMP_URL}&sourceId=4&simulcastId&videoOnly&videoTargetBitrate=250" \
--map 0:v:4 -c:v copy -f flv "${RTMP_URL}&sourceId=5&simulcastId&videoOnly&videoTargetBitrate=200"
+-map 0:v:1 -c:v copy -f flv "${RTMP_URL}&norestream&sourceId=2&simulcastId&videoOnly&videoTargetBitrate=1536" \
+-map 0:v:2 -c:v copy -f flv "${RTMP_URL}&norestream&sourceId=3&simulcastId&videoOnly&videoTargetBitrate=540" \
+-map 0:v:3 -c:v copy -f flv "${RTMP_URL}&norestream&sourceId=4&simulcastId&videoOnly&videoTargetBitrate=250" \
+-map 0:v:4 -c:v copy -f flv "${RTMP_URL}&norestream&sourceId=5&simulcastId&videoOnly&videoTargetBitrate=200"
 
 
 ##################### single video track ##############################################################
