@@ -13,8 +13,13 @@ MEDIA_PATH="/home/ubuntu/test_media"
 
 
 ############### staging
-SRT_PUBLISH_URL="srt://srt-syd-1-staging.millicast.com:10000"
-SRT_STREAM="test_zita?t=jOTF0ROM82imBl-VLs_AascFwlp8TQDOl080hbE7onM"
+# syd-1
+#SRT_PUBLISH_URL="srt://srt-syd-1-staging.millicast.com:10000"
+#SRT_STREAM="test_zita_srt?t=jOTF0ROM82imBl-VLs_AascFwlp8TQDOl080hbE7onM"
+
+# lon-1
+SRT_PUBLISH_URL="srt://srt-lon-1-staging.millicast.com:10000"
+SRT_STREAM="test_zita_srt?t=RHT4mu7lPNxRNPIX5kkHtSMAPBycN4AypD5QKx4tLh4"
 
 
 ############### local test
@@ -25,18 +30,23 @@ SRT_STREAM="test_zita?t=jOTF0ROM82imBl-VLs_AascFwlp8TQDOl080hbE7onM"
 
 SRT_URL="${SRT_PUBLISH_URL}?streamid=${SRT_STREAM}"
 
+MUTI_TRACK_FILE="reference_mbr.mp4"
+FILE_0="BigBuckBunny1080p30s_noBframe.mp4"
+FILE_1="TearsOfSteel_720p_h265.mkv"
+FILE_2="BigBuckBunny1080p30s.mp4"
+
 FILE="BigBuckBunny1080p30s.mp4"
 
+FILE=$MUTI_TRACK_FILE
 MEDIA_FILE="${MEDIA_PATH}/${FILE}"
 
-#V_CODEC="copy"
-#A_CODEC="copy"
+V_CODEC="copy"
+#V_CODEC="libx264 -preset veryfast -g 30 -r 30 -bf 0"
+#V_CODEC="libx265 -preset veryfast -g 30 -r 30 -bf 0"
 
-V_CODEC="libx264 -preset veryfast -g 30 -r 30 -bf 0"
-A_CODEC="aac -ab 96000 -ar 44100 -ac 2"
+A_CODEC="copy"
+#A_CODEC="aac -ab 96000 -ar 44100 -ac 2"
 
-#V_CODEC="libx264 -b:v 1800k -maxrate 2500k -minrate 800k -bufsize 1000k \
-#  -preset veryfast -tune zerolatency -x264opts /"nal-hrd=none:bframes=0/""
 
 echo ${SRT_URL}
 
