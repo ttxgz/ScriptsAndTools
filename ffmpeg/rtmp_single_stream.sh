@@ -36,12 +36,12 @@ MEDIA_PATH="/home/ubuntu/test_media"
 #RTMP_PUBLISH_PATH="rtmp://rtmp-sgp-1-staging.millicast.com:1935/v2/pub"
 #RTMP_STREAM="test_zita?token=ec5f13528328ce735e1589a8f2fa31d5ea3d8304b5d2c81ef2fc4903e25330cc"
 # lon-1
-RTMP_PUBLISH_PATH="rtmp://rtmp-lon-1-staging.millicast.com:1935/v2/pub"
-RTMP_STREAM="test_zita_restream?token=4474f89aeee53cdc5134f217e64907b523003c1c9c378032a43e502b1e2d2e1e"
+#RTMP_PUBLISH_PATH="rtmp://rtmp-lon-1-staging.millicast.com:1935/v2/pub"
+#RTMP_STREAM="test_zita?token=4474f89aeee53cdc5134f217e64907b523003c1c9c378032a43e502b1e2d2e1e"
 
 ############### local test
-#RTMP_PUBLISH_PATH="rtmp://192.9.189.148/v2/pub"
-#RTMP_STREAM="test_zita?token=basic"
+RTMP_PUBLISH_PATH="rtmp://192.9.189.148:1935/v2/pub"
+RTMP_STREAM="test_zita?token=basic"
 #RTMP_STREAM="test_zita?token=clipAndRecord"
 
 
@@ -78,28 +78,28 @@ echo ${RTMP_URL}
 
 ## NOTICE: norestream has to be set so millicast restream would only restream correct source
 
-echo "
-ffmpeg \
--nostdin -fflags +genpts -re -stream_loop -1 -i $MEDIA_FILE \
--map 0:v:0 -map 0:a:0 -c:a $A_CODEC -c:v $V_CODEC -f flv "${RTMP_URL}&sourceId=1&simulcastId&videoTargetBitrate=4000" \
--map 0:v:1 -c:v $V_CODEC -f flv "${RTMP_URL}&norestream&sourceId=2&simulcastId&videoOnly&videoTargetBitrate=1536" \
--map 0:v:2 -c:v $V_CODEC -f flv "${RTMP_URL}&norestream&sourceId=3&simulcastId&videoOnly&videoTargetBitrate=540" \
--map 0:v:3 -c:v $V_CODEC -f flv "${RTMP_URL}&norestream&sourceId=4&simulcastId&videoOnly&videoTargetBitrate=250" \
--map 0:v:4 -c:v $V_CODEC -f flv "${RTMP_URL}&norestream&sourceId=5&simulcastId&videoOnly&videoTargetBitrate=200"
-"
-
-
-ffmpeg \
--nostdin -fflags +genpts -re -stream_loop -1 -i $MEDIA_FILE \
--map 0:v:0 -map 0:a:0 -c:a $A_CODEC -c:v $V_CODEC -f flv "${RTMP_URL}&sourceId=1&simulcastId&videoTargetBitrate=4000" \
--map 0:v:1 -c:v $V_CODEC -f flv "${RTMP_URL}&norestream&sourceId=2&simulcastId&videoOnly&videoTargetBitrate=1536" \
--map 0:v:2 -c:v $V_CODEC -f flv "${RTMP_URL}&norestream&sourceId=3&simulcastId&videoOnly&videoTargetBitrate=540" \
--map 0:v:3 -c:v $V_CODEC -f flv "${RTMP_URL}&norestream&sourceId=4&simulcastId&videoOnly&videoTargetBitrate=250" \
--map 0:v:4 -c:v $V_CODEC -f flv "${RTMP_URL}&norestream&sourceId=5&simulcastId&videoOnly&videoTargetBitrate=200"
+#echo "
+#ffmpeg \
+#-nostdin -fflags +genpts -re -stream_loop -1 -i $MEDIA_FILE \
+#-map 0:v:0 -map 0:a:0 -c:a $A_CODEC -c:v $V_CODEC -f flv "${RTMP_URL}&sourceId=1&simulcastId&videoTargetBitrate=4000" \
+#-map 0:v:1 -c:v $V_CODEC -f flv "${RTMP_URL}&norestream&sourceId=2&simulcastId&videoOnly&videoTargetBitrate=1536" \
+#-map 0:v:2 -c:v $V_CODEC -f flv "${RTMP_URL}&norestream&sourceId=3&simulcastId&videoOnly&videoTargetBitrate=540" \
+#-map 0:v:3 -c:v $V_CODEC -f flv "${RTMP_URL}&norestream&sourceId=4&simulcastId&videoOnly&videoTargetBitrate=250" \
+#-map 0:v:4 -c:v $V_CODEC -f flv "${RTMP_URL}&norestream&sourceId=5&simulcastId&videoOnly&videoTargetBitrate=200"
+#"
+#
+#
+#ffmpeg \
+#-nostdin -fflags +genpts -re -stream_loop -1 -i $MEDIA_FILE \
+#-map 0:v:0 -map 0:a:0 -c:a $A_CODEC -c:v $V_CODEC -f flv "${RTMP_URL}&sourceId=1&simulcastId&videoTargetBitrate=4000" \
+#-map 0:v:1 -c:v $V_CODEC -f flv "${RTMP_URL}&norestream&sourceId=2&simulcastId&videoOnly&videoTargetBitrate=1536" \
+#-map 0:v:2 -c:v $V_CODEC -f flv "${RTMP_URL}&norestream&sourceId=3&simulcastId&videoOnly&videoTargetBitrate=540" \
+#-map 0:v:3 -c:v $V_CODEC -f flv "${RTMP_URL}&norestream&sourceId=4&simulcastId&videoOnly&videoTargetBitrate=250" \
+#-map 0:v:4 -c:v $V_CODEC -f flv "${RTMP_URL}&norestream&sourceId=5&simulcastId&videoOnly&videoTargetBitrate=200"
 
 
 ##################### single video track ##############################################################
-#ffmpeg \
-#-nostdin -fflags +genpts -re -stream_loop -1 -i $MEDIA_FILE \
-#-map 0:v:0 -map 0:a:0 -c:a copy -c:v copy -f flv "${RTMP_URL}"
+ffmpeg \
+-nostdin -fflags +genpts -re -stream_loop -1 -i $MEDIA_FILE \
+-map 0:v:0 -map 0:a:0 -c:a $A_CODEC -c:v $V_CODEC -f flv "${RTMP_URL}"
 
