@@ -29,6 +29,12 @@ MEDIA_PATH="/home/ubuntu/test_media"
 
 
 ############### staging
+# scale test (auto, syd)
+#RTMP_PUBLISH_PATH="rtmp://rtmp-auto-staging.millicast.com:1935/v2/pub"
+#RTMP_STREAM="test_zita_scale.a?token=626f87ecd3ff69263e4fa67aa9991a8aed47328092e58d339518bf9db2daf154"
+# scale test sgp
+RTMP_PUBLISH_PATH="rtmp://rtmp-sgp-1-staging.millicast.com:1935/v2/pub"
+RTMP_STREAM="test_zita_scale.a?token=47a833d8cb50eefe9ec6f63df85ce61eb7c29156bd3041b382cf073bd5942100"
 # syd-1
 #RTMP_PUBLISH_PATH="rtmp://rtmp-syd-1-staging.millicast.com:1935/v2/pub"
 #RTMP_STREAM="test_zita?token=8ce4c5d1138cf368a6065f952ecfc06ac705c25a7c4d00ce974f3485b13ba273"
@@ -38,10 +44,15 @@ MEDIA_PATH="/home/ubuntu/test_media"
 # lon-1
 #RTMP_PUBLISH_PATH="rtmp://rtmp-lon-1-staging.millicast.com:1935/v2/pub"
 #RTMP_STREAM="test_zita?token=4474f89aeee53cdc5134f217e64907b523003c1c9c378032a43e502b1e2d2e1e"
+# phx-1
+#RTMP_PUBLISH_PATH="rtmp://rtmp-phx-1-staging.millicast.com:1935/v2/pub"
+#RTMP_STREAM="test_zita?token=14ecf2a741ca11462755ba7575ac423de6ce83314c3d1657c86fd55466524737"
+
+
 
 ############### local test
-RTMP_PUBLISH_PATH="rtmp://192.9.189.148:1935/v2/pub"
-RTMP_STREAM="test_zita?token=basic"
+#RTMP_PUBLISH_PATH="rtmp://192.9.189.148:1935/v2/pub"
+#RTMP_STREAM="test_zita?token=basic"
 #RTMP_STREAM="test_zita?token=clipAndRecord"
 
 
