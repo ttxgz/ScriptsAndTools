@@ -1,0 +1,113 @@
+(function() {
+    function findScrollableParent() {
+        const firstEntry = document.querySelector('[class*="entryText"]');
+        if (!firstEntry) return null;
+        let el = firstEntry.parentElement;
+        while (el) {
+            const style = window.getComputedStyle(el);
+            if (
+                (style.overflow === 'auto' || style.overflow === 'scroll' ||
+                 style.overflowY === 'auto' || style.overflowY === 'scroll') &&
+                el.scrollHeight > el.clientHeight
+            ) {
+                return el;
+            }
+            el = el.parentElement;
+        }
+        return null;
+    }
+
+    const container = findScrollableParent();
+    if (!container) {
+        alert("❌ 找不到 Transcript 滚动容器，请确认 Transcript 面板已展开。");
+        return;
+    }
+
+    let allData = [];
+
+    function collectCurrentNodes() {
+        const allNodes = document.querySelectorAll('[class*="itemDisplayName"], [class*="entryText"]');
+        allNodes.forEach(node => {
+            const rect = node.getBoundingClientRect();
+            const top = rect.top + container.scrollTop;
+            const className = node.className;
+            const text = node.innerText.trim();
+            if (!text) return;
+
+            const key = `${top.toFixed(0)}_${text.substring(0, 20)}`;
+            const exists = allData.some(d => d.key === key);
+            if (!exists) {
+                const isSpeaker = /itemDisplayName/.test(className);
+                allData.push({ key, top, isSpeaker, text });
+            }
+        });
+    }
+
+    let lastScrollTop = -1;
+    const scrollStep = 300;
+    const delay = 400;
+
+    function scrollAndCollect() {
+        collectCurrentNodes();
+        const currentScrollTop = container.scrollTop;
+
+        if (container.scrollTop >= container.scrollHeight - container.clientHeight - 5 ||
+            currentScrollTop === lastScrollTop) {
+            collectCurrentNodes();
+            buildAndDownload();
+            return;
+        }
+
+        lastScrollTop = currentScrollTop;
+        container.scrollTop += scrollStep;
+        setTimeout(scrollAndCollect, delay);
+    }
+
+    function buildAndDownload() {
+        allData.sort((a, b) => a.top - b.top);
+
+        let resultText = "";
+        let lastPrintedSpeaker = "";
+        let currentSpeaker = "Unknown Speaker";
+
+        allData.forEach(item => {
+            if (item.isSpeaker) {
+                currentSpeaker = item.text;
+            } else {
+                if (currentSpeaker !== lastPrintedSpeaker) {
+                    resultText += `\n${currentSpeaker}:\n`;
+                    lastPrintedSpeaker = currentSpeaker;
+                }
+                resultText += `${item.text}\n`;
+            }
+        });
+
+        resultText = resultText.replace(/\n\s*\n/g, '\n\n').trim();
+
+        if (resultText.length < 50) {
+            alert("❌ 内容太少，请确认 Transcript 面板已展开。");
+            return;
+        }
+
+        // 生成时间戳：yyyyMMdd_HHmmss
+        const now = new Date();
+        const pad = n => String(n).padStart(2, '0');
+        const timestamp = `${now.getFullYear()}${pad(now.getMonth()+1)}${pad(now.getDate())}_${pad(now.getHours())}${pad(now.getMinutes())}${pad(now.getSeconds())}`;
+        const filename = `transcript_${timestamp}.txt`;
+
+        const blob = new Blob([resultText], { type: 'text/plain;charset=utf-8' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = filename;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+
+        alert(`🎉 完成！共 ${allData.length} 个节点。\n\n✅ 已下载：${filename}`);
+    }
+
+    container.scrollTop = 0;
+    setTimeout(scrollAndCollect, 500);
+})();
