@@ -7,11 +7,13 @@ MEDIA_PATH="/home/ubuntu/test_media"
 ############### prod
 #RTMP_PUBLISH_PATH="rtmp://rtmp-phx-1.millicast.com:1935/v2/pub"
 #RTMP_STREAM="test_zita?token=3f1f19f7a622c4867c87b30711d57faa83cd9b4efe09f32b1be116e13decf49f"
+# syd-1
 #RTMP_PUBLISH_PATH="rtmp://rtmp-syd-1.millicast.com:1935/v2/pub"
 #RTMP_STREAM="zita_pub_syd?token=9999a45a8ac9b724f6397f23580cfe87b9785483536093cf3c0f2deb6f7395e1"
-
+# fra-1
 #RTMP_PUBLISH_PATH="rtmp://rtmp-fra-1.millicast.com:1935/v2/pub"
-#RTMP_STREAM="zita_pub_fra?token=6d979bb8a7e6a332301a94c58385708c41d266d2c32b147bda7e4785974c1b4c"
+RTMP_PUBLISH_PATH="rtmp://158.180.43.150:1935/v2/pub"
+RTMP_STREAM="test_zita?token=6d979bb8a7e6a332301a94c58385708c41d266d2c32b147bda7e4785974c1b4c"
 
 ############### rp2
 # syd-1
@@ -33,8 +35,8 @@ MEDIA_PATH="/home/ubuntu/test_media"
 #RTMP_PUBLISH_PATH="rtmp://rtmp-auto-staging.millicast.com:1935/v2/pub"
 #RTMP_STREAM="test_zita_scale.a?token=626f87ecd3ff69263e4fa67aa9991a8aed47328092e58d339518bf9db2daf154"
 # scale test sgp
-RTMP_PUBLISH_PATH="rtmp://rtmp-sgp-1-staging.millicast.com:1935/v2/pub"
-RTMP_STREAM="test_zita_scale.a?token=47a833d8cb50eefe9ec6f63df85ce61eb7c29156bd3041b382cf073bd5942100"
+#RTMP_PUBLISH_PATH="rtmp://rtmp-sgp-1-staging.millicast.com:1935/v2/pub"
+#RTMP_STREAM="test_zita_scale.a?token=47a833d8cb50eefe9ec6f63df85ce61eb7c29156bd3041b382cf073bd5942100"
 # syd-1
 #RTMP_PUBLISH_PATH="rtmp://rtmp-syd-1-staging.millicast.com:1935/v2/pub"
 #RTMP_STREAM="test_zita?token=8ce4c5d1138cf368a6065f952ecfc06ac705c25a7c4d00ce974f3485b13ba273"
@@ -109,8 +111,13 @@ echo ${RTMP_URL}
 #-map 0:v:4 -c:v $V_CODEC -f flv "${RTMP_URL}&norestream&sourceId=5&simulcastId&videoOnly&videoTargetBitrate=200"
 
 
-##################### single video track ##############################################################
+###################### single video track ##############################################################
+#ffmpeg \
+#-nostdin -fflags +genpts -re -stream_loop -1 -i $MEDIA_FILE \
+#-map 0:v:0 -map 0:a:0 -c:a $A_CODEC -c:v $V_CODEC -f flv "${RTMP_URL}"
+
+###################### audio only track ##############################################################
 ffmpeg \
 -nostdin -fflags +genpts -re -stream_loop -1 -i $MEDIA_FILE \
--map 0:v:0 -map 0:a:0 -c:a $A_CODEC -c:v $V_CODEC -f flv "${RTMP_URL}"
+-map 0:a:0 -c:a $A_CODEC -f flv "${RTMP_URL}&audioOnly"
 
