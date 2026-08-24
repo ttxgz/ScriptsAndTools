@@ -1,0 +1,132 @@
+# ================================================================
+# rename and put this file as: ~/.ssh/config
+# ================================================================
+
+Host gitlab.com
+    HostName gitlab.com
+    User git
+    IdentityFile ~/.ssh/id_ed25519
+    IdentitiesOnly yes
+
+# ================================================================
+# to use a different ssh key for a different github account
+# eg. git clone git@github.zita:ttxgz/ScriptsAndTools.git
+# rather than git clone git@github.com:ttxgz/ScriptsAndTools.git
+# ================================================================
+Host github.zita
+    HostName github.com
+    User git
+    IdentityFile ~/.ssh/id_ed25519_personal
+    IdentitiesOnly yes
+
+git clone git@github.zita:ttxgz/ScriptsAndTools.git
+
+Host p320
+	HostName syd-zliao-p320.apac-eng.dolby.net
+	User wliao
+	ServerAliveInterval 60
+	IdentityFile ~/.ssh/id_ed25519
+
+Host p3 
+	HostName syd-zliao-p3.apac-eng.dolby.net
+	User wliao
+	ServerAliveInterval 60
+	IdentityFile ~/.ssh/id_ed25519
+
+Host oci 
+	HostName 192.9.189.148
+	User ubuntu
+	ServerAliveInterval 60
+	IdentityFile ~/.ssh/OCI_media-server-dev.key
+
+Host jumpbox 
+    HostName https://jumpserver-dev.millicast.com/
+    User wliao
+    ServerAliveInterval 60
+
+Host pub_dev
+    HostName 137.23.5.76
+    User wliao
+    IdentityFile ~/.ssh/sapi_servers.key
+    ProxyJump jumpbox
+    ServerAliveInterval 60
+
+# ==========================================
+# 1. Global Defaults & SSH Canonicalization
+# ==========================================
+Host *
+    User wliao
+    IdentityFile  ~/.ssh/sapi_servers.key
+    AddKeysToAgent yes
+    CanonicalizeHostname yes
+    CanonicalDomains dev.rts.millicast.com stg.rts.millicast.com prd.rts.millicast.com rts.millicast.com
+    CanonicalizeMaxDots 1
+
+# ==========================================
+# 2. Bastion Host Definitions
+# ==========================================
+# --- DEV ---
+Host bastion-dev-oci
+    HostName bastion-oci-dev.millicast.com
+
+Host bastion-dev-do-sgp
+    HostName bastion-do-sgp-1-dev.millicast.com
+
+# --- STAGING ---
+Host bastion-stg-oci
+    HostName bastion-oci-stg.millicast.com
+
+Host bastion-stg-do-sgp
+    HostName bastion-do-sgp-1-stg.millicast.com
+
+# --- PRODUCTION ---
+Host bastion-prd-oci
+    HostName bastion-oci-prd.millicast.com
+
+Host bastion-prd-do-sgp
+    HostName bastion-do-sgp-1-prd.millicast.com
+
+Host bastion-prd-do-blr
+    HostName bastion-do-blr-1-prd.millicast.com
+
+# ==========================================
+# 3. Dynamic ProxyJump Routing (Domains)
+# ==========================================
+# --- DEV ---
+# DO Dev SGP Bastion
+Host *-sgp-1.dev.*
+    ProxyJump bastion-dev-do-sgp
+
+# Other regions (e.g., lon-1) -> OCI Dev Bastion
+Host *.dev.rts.millicast.com !bastion-oci.dev.* !bastion-do.*.dev.*
+    ProxyJump bastion-dev-oci
+
+# --- STAGING ---
+# DO Staging SGP Bastion
+Host *-sgp-1.stg.*
+    ProxyJump bastion-stg-do-sgp
+
+# Other regions -> OCI Staging Bastion
+Host *.stg.rts.millicast.com !bastion-oci.stg.* !bastion-do.*.stg.*
+    ProxyJump bastion-stg-oci
+
+# --- PRODUCTION ---
+# DO SGP -> DO Prod SGP Bastion
+Host *-sgp-1.prd.*
+    ProxyJump bastion-prd-do-sgp
+
+# DO BLR -> DO Prod BLR Bastion
+Host *-blr-1.prd.*
+    ProxyJump bastion-prd-do-blr
+
+# Other regions -> OCI Prod Bastion
+Host *.prd.rts.millicast.com !bastion-oci.prd.* !bastion-do.*.prd.*
+    ProxyJump bastion-prd-oci
+
+# ==========================================
+# 4. example
+# ==========================================
+# ssh pubrtmp5410-fra-1.prd
+# ssh transcode1316-syd-1.prd
+# ssh sub1307-syd-1.stg
+# ssh pub1583-lon-1.dev
