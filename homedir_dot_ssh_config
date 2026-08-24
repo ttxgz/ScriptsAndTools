@@ -19,8 +19,6 @@ Host github.zita
     IdentityFile ~/.ssh/id_ed25519_personal
     IdentitiesOnly yes
 
-git clone git@github.zita:ttxgz/ScriptsAndTools.git
-
 Host p320
 	HostName syd-zliao-p320.apac-eng.dolby.net
 	User wliao
