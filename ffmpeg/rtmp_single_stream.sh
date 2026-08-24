@@ -12,8 +12,8 @@ MEDIA_PATH="/home/ubuntu/test_media"
 #RTMP_STREAM="zita_pub_syd?token=9999a45a8ac9b724f6397f23580cfe87b9785483536093cf3c0f2deb6f7395e1"
 # fra-1
 #RTMP_PUBLISH_PATH="rtmp://rtmp-fra-1.millicast.com:1935/v2/pub"
-RTMP_PUBLISH_PATH="rtmp://158.180.43.150:1935/v2/pub"
-RTMP_STREAM="test_zita?token=6d979bb8a7e6a332301a94c58385708c41d266d2c32b147bda7e4785974c1b4c"
+#RTMP_PUBLISH_PATH="rtmp://158.180.43.150:1935/v2/pub"
+#RTMP_STREAM="test_zita?token=6d979bb8a7e6a332301a94c58385708c41d266d2c32b147bda7e4785974c1b4c"
 
 ############### rp2
 # syd-1
@@ -53,9 +53,9 @@ RTMP_STREAM="test_zita?token=6d979bb8a7e6a332301a94c58385708c41d266d2c32b147bda7
 
 
 ############### local test
-#RTMP_PUBLISH_PATH="rtmp://192.9.189.148:1935/v2/pub"
+RTMP_PUBLISH_PATH="rtmp://192.9.189.148:1935/v2/pub"
 #RTMP_STREAM="test_zita?token=basic"
-#RTMP_STREAM="test_zita?token=clipAndRecord"
+RTMP_STREAM="test_zita?token=clipAndRecord"
 
 
 RTMP_URL="${RTMP_PUBLISH_PATH}/${RTMP_STREAM}"
@@ -84,40 +84,57 @@ A_CODEC="copy"
 #V_CODEC="libx264 -b:v 1800k -maxrate 2500k -minrate 800k -bufsize 1000k \
 #  -preset veryfast -tune zerolatency -x264opts /"nal-hrd=none:bframes=0/""
 
+# PTS (Presentation Timestamp) filter - comment out both for normal real-time mode
+# if it's enable, user can't not use "copy" for A/V_CODEC. Chage A/V_CODEC to a re-encode above
+#PTS_FILTER="setpts=PTS*85"
+#APTS_FILTER="asetpts=PTS*85"
+
+# Build timing and filter arguments based on PTS_FILTER
+build_timing_args() {
+    if [ -n "$PTS_FILTER" ] || [ -n "$APTS_FILTER" ]; then
+        # PTS filter mode: no -re (controlled by PTS), keep +genpts
+        TIMING_FLAGS="-fflags +genpts"
+        V_FILTER_ARG="${PTS_FILTER:+-vf $PTS_FILTER}"
+        A_FILTER_ARG="${APTS_FILTER:+-af $APTS_FILTER}"
+    else
+        # Normal mode: real-time playback
+        TIMING_FLAGS="-fflags +genpts -re"
+        V_FILTER_ARG=""
+        A_FILTER_ARG=""
+    fi
+}
+
+# Call before ffmpeg commands
+build_timing_args
+
 echo ${RTMP_URL}
 
 
 ##################### multi video track ##############################################################
 
-## NOTICE: norestream has to be set so millicast restream would only restream correct source
+# NOTICE: norestream has to be set so millicast restream would only restream correct source
 
-#echo "
-#ffmpeg \
-#-nostdin -fflags +genpts -re -stream_loop -1 -i $MEDIA_FILE \
-#-map 0:v:0 -map 0:a:0 -c:a $A_CODEC -c:v $V_CODEC -f flv "${RTMP_URL}&sourceId=1&simulcastId&videoTargetBitrate=4000" \
-#-map 0:v:1 -c:v $V_CODEC -f flv "${RTMP_URL}&norestream&sourceId=2&simulcastId&videoOnly&videoTargetBitrate=1536" \
-#-map 0:v:2 -c:v $V_CODEC -f flv "${RTMP_URL}&norestream&sourceId=3&simulcastId&videoOnly&videoTargetBitrate=540" \
-#-map 0:v:3 -c:v $V_CODEC -f flv "${RTMP_URL}&norestream&sourceId=4&simulcastId&videoOnly&videoTargetBitrate=250" \
-#-map 0:v:4 -c:v $V_CODEC -f flv "${RTMP_URL}&norestream&sourceId=5&simulcastId&videoOnly&videoTargetBitrate=200"
-#"
-#
-#
-#ffmpeg \
-#-nostdin -fflags +genpts -re -stream_loop -1 -i $MEDIA_FILE \
-#-map 0:v:0 -map 0:a:0 -c:a $A_CODEC -c:v $V_CODEC -f flv "${RTMP_URL}&sourceId=1&simulcastId&videoTargetBitrate=4000" \
-#-map 0:v:1 -c:v $V_CODEC -f flv "${RTMP_URL}&norestream&sourceId=2&simulcastId&videoOnly&videoTargetBitrate=1536" \
-#-map 0:v:2 -c:v $V_CODEC -f flv "${RTMP_URL}&norestream&sourceId=3&simulcastId&videoOnly&videoTargetBitrate=540" \
-#-map 0:v:3 -c:v $V_CODEC -f flv "${RTMP_URL}&norestream&sourceId=4&simulcastId&videoOnly&videoTargetBitrate=250" \
-#-map 0:v:4 -c:v $V_CODEC -f flv "${RTMP_URL}&norestream&sourceId=5&simulcastId&videoOnly&videoTargetBitrate=200"
+#FFMPEG_CMD="ffmpeg \
+#-nostdin $TIMING_FLAGS -stream_loop -1 -i $MEDIA_FILE \
+#-map 0:v:0 -map 0:a:0 -c:a $A_CODEC -c:v $V_CODEC $V_FILTER_ARG $A_FILTER_ARG -f flv \"${RTMP_URL}&sourceId=1&simulcastId&videoTargetBitrate=4000\" \
+#-map 0:v:1 -c:v $V_CODEC $V_FILTER_ARG -f flv \"${RTMP_URL}&norestream&sourceId=2&simulcastId&videoOnly&videoTargetBitrate=1536\" \
+#-map 0:v:2 -c:v $V_CODEC $V_FILTER_ARG -f flv \"${RTMP_URL}&norestream&sourceId=3&simulcastId&videoOnly&videoTargetBitrate=540\" \
+#-map 0:v:3 -c:v $V_CODEC $V_FILTER_ARG -f flv \"${RTMP_URL}&norestream&sourceId=4&simulcastId&videoOnly&videoTargetBitrate=250\" \
+#-map 0:v:4 -c:v $V_CODEC $V_FILTER_ARG -f flv \"${RTMP_URL}&norestream&sourceId=5&simulcastId&videoOnly&videoTargetBitrate=200\""
+
 
 
 ###################### single video track ##############################################################
-#ffmpeg \
-#-nostdin -fflags +genpts -re -stream_loop -1 -i $MEDIA_FILE \
-#-map 0:v:0 -map 0:a:0 -c:a $A_CODEC -c:v $V_CODEC -f flv "${RTMP_URL}"
+FFMPEG_CMD="ffmpeg \
+-nostdin $TIMING_FLAGS -stream_loop -1 -i $MEDIA_FILE \
+-map 0:v:0 -map 0:a:0 -c:a $A_CODEC -c:v $V_CODEC $V_FILTER_ARG $A_FILTER_ARG -f flv \"${RTMP_URL}\""
+
 
 ###################### audio only track ##############################################################
-ffmpeg \
--nostdin -fflags +genpts -re -stream_loop -1 -i $MEDIA_FILE \
--map 0:a:0 -c:a $A_CODEC -f flv "${RTMP_URL}&audioOnly"
+#FFMPEG_CMD="ffmpeg \
+#-nostdin $TIMING_FLAGS -stream_loop -1 -i $MEDIA_FILE \
+#-map 0:a:0 -c:a $A_CODEC $A_FILTER_ARG -f flv \"${RTMP_URL}&audioOnly\""
+
+echo "$FFMPEG_CMD"
+eval $FFMPEG_CMD
 
