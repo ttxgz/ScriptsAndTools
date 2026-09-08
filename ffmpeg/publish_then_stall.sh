@@ -12,8 +12,8 @@ MEDIA_PATH="~/working/test_media"
 #RTMP_PUBLISH_PATH="rtmp://rtmp-phx-1.millicast.com:1935/v2/pub"
 #RTMP_STREAM="${STREAM_NAME}?token=3f1f19f7a622c4867c87b30711d57faa83cd9b4efe09f32b1be116e13decf49f"
 # syd-1
-RTMP_PUBLISH_PATH="rtmp://rtmp-syd-1.millicast.com:1935/v2/pub"
-RTMP_STREAM="zita_pub_syd?token=9999a45a8ac9b724f6397f23580cfe87b9785483536093cf3c0f2deb6f7395e1"
+#RTMP_PUBLISH_PATH="rtmp://140.238.207.30:1935/v2/pub"
+#RTMP_STREAM="zita_pub_syd?token=9999a45a8ac9b724f6397f23580cfe87b9785483536093cf3c0f2deb6f7395e1"
 # fra-1
 #RTMP_PUBLISH_PATH="rtmp://rtmp-fra-1.millicast.com:1935/v2/pub"
 #RTMP_PUBLISH_PATH="rtmp://158.180.43.150:1935/v2/pub"
@@ -60,6 +60,15 @@ RTMP_STREAM="zita_pub_syd?token=9999a45a8ac9b724f6397f23580cfe87b9785483536093cf
 #RTMP_PUBLISH_PATH="rtmp://rtmp-phx-1-staging.millicast.com:1935/v2/pub"
 #RTMP_STREAM="${STREAM_NAME}?token=14ecf2a741ca11462755ba7575ac423de6ce83314c3d1657c86fd55466524737"
 
+############### theo
+#RTMP_PUBLISH_PATH="rtmp://rtmp-phx-1-staging.millicast.com:1935/v2/pub"
+#RTMP_STREAM="${STREAM_NAME}?token=14ecf2a741ca11462755ba7575ac423de6ce83314c3d1657c86fd55466524737"
+
+############### youtube
+RTMP_PUBLISH_PATH="rtmp://a.rtmp.youtube.com/live2"
+RTMP_STREAM="j4eb-jq0y-hp4m-43es-1y15"
+
+
 
 
 ############### local test
@@ -70,7 +79,8 @@ RTMP_STREAM="zita_pub_syd?token=9999a45a8ac9b724f6397f23580cfe87b9785483536093cf
 
 RTMP_URL="${RTMP_PUBLISH_PATH}/${RTMP_STREAM}"
 
-MUTI_TRACK_FILE="reference_mbr.mp4"
+MUTI_TRACK_FILE="test_h264_nobf_gop1s.mp4"
+#MUTI_TRACK_FILE="reference_mbr.mp4"
 FILE_0="BigBuckBunny1080p30s_noBframe.mp4"
 FILE_1="TearsOfSteel_720p_h265.mkv"
 FILE_2="BigBuckBunny1080p30s.mp4"
@@ -135,10 +145,13 @@ echo ${RTMP_URL}
 
 
 ####################### single video track ##############################################################
+#FFMPEG_CMD="ffmpeg \
+#-nostdin $TIMING_FLAGS -stream_loop -1 -i $MEDIA_FILE \
+#-map 0:v:0 -map 0:a:0 -c:a $A_CODEC -c:v $V_CODEC $V_FILTER_ARG $A_FILTER_ARG -f flv \"${RTMP_URL}\""
+
 FFMPEG_CMD="ffmpeg \
 -nostdin $TIMING_FLAGS -stream_loop -1 -i $MEDIA_FILE \
--map 0:v:0 -map 0:a:0 -c:a $A_CODEC -c:v $V_CODEC $V_FILTER_ARG $A_FILTER_ARG -f flv \"${RTMP_URL}\""
-
+-c:a $A_CODEC -c:v $V_CODEC $V_FILTER_ARG $A_FILTER_ARG -f flv \"${RTMP_URL}\""
 
 ###################### audio only track ##############################################################
 #FFMPEG_CMD="ffmpeg \
